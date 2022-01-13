@@ -1,0 +1,62 @@
+[tool.poetry]
+name = "openldap-schema-converter"
+version = "0.9.0"
+description = "OpenLDAP Schema file converter LDIF or schema"
+authors = ["KAWAI Shun <shun@osstech.co.jp>"]
+license = "MIT"
+packages = [
+  { include = 'openldap_schema_converter', from = 'src' }
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+click = "^8.0.3"
+ldif = "^4.1.2"
+
+[tool.poetry.dev-dependencies]
+poethepoet = "^0.12.0"
+pre-commit = "^2.16.0"
+flake8 = "^4.0.1"
+autoflake = "^1.4"
+isort = "^5.10.1"
+black = "^21.12b0"
+pyproject-flake8 = "^0.0.1-alpha.2"
+pytest = "^6.2.5"
+pytest-cov = "^3.0.0"
+mypy = "^0.931"
+
+[tool.poetry.scripts]
+schema_converter = "openldap_schema_converter.cli:cli"
+
+[tool.poe.tasks.test]
+cmd = "pytest --cov=src/ --cov-report=html tests/"
+
+[tool.poe.tasks.lint]
+sequence = [
+  { cmd = "pflake8 src/ tests/" },
+  { cmd = "mypy src/" },
+]
+
+[tool.poe.tasks.format]
+sequence = [
+  { cmd = "autoflake -ir --remove-all-unused-imports --remove-unused-variables --ignore-init-module-imports src/ tests/" },
+  { cmd = "isort --profile black src/ tests/" },
+  { cmd = "black src/ tests/" }
+]
+
+[tool.flake8]
+max-line-length = 88
+ignore = "E203,W503,W504"
+
+[tool.mypy]
+python_version = 3.9
+
+[[tool.mypy.overrides]]
+module = [
+  "ldif",
+]
+ignore_missing_imports = true
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
