@@ -1,13 +1,23 @@
 dn: cn=testschema,cn=schema,cn=config
 objectClass: olcSchemaConfig
 cn: testschema
-olcAttributeTypes: ( 1.1.1.1.1.1.1.1.1.1.1 
- NAME 'testAttribute' 
- DESC 'test Attribute' 
- EQUALITY caseIgnoreMatch 
+olcAttributeTypes: ( 1.1.1.1.1.1.1.1.1.1.1
+ NAME 'testAttribute'
+ DESC 'test Attribute'
+ EQUALITY caseIgnoreMatch
  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
-olcObjectClasses: ( 1.1.1.1.1.1.1.1.1.2 
- NAME 'testClass' 
- AUXILIARY 
- MAY ( testAttribute ) 
+olcObjectClasses: ( 1.1.1.1.1.1.1.1.1.2
+ NAME 'testClass'
+ AUXILIARY
+ MAY ( testAttribute )
+ )
+olcAttributeTypes: {1}( 1.1.1.1.1.1.1.1.1.1.3
+ NAME 'testAttribute'
+ DESC 'test Attribute'
+ EQUALITY caseIgnoreMatch
+ SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+olcObjectClasses: {2}( 1.1.1.1.1.1.1.1.1.4
+ NAME 'testClass'
+ AUXILIARY
+ MAY ( testAttribute )
  )

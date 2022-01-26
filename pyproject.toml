@@ -29,19 +29,26 @@ mypy = "^0.931"
 schema_converter = "openldap_schema_converter.cli:cli"
 
 [tool.poe.tasks.test]
-cmd = "pytest --cov=src/ --cov-report=html tests/"
+cmd = "pytest --cov=src/ tests/"
+env = { PYTEST_ADDOPTS = "--cov-report=html" }
+
+[tool.poe.tasks.citest]
+ref = "test"
+env = { PYTEST_ADDOPTS = "--cov-report=term" }
 
 [tool.poe.tasks.lint]
 sequence = [
   { cmd = "pflake8 src/ tests/" },
   { cmd = "mypy src/" },
 ]
+ignore_fail = "return_non_zero"
 
 [tool.poe.tasks.format]
 sequence = [
   { cmd = "autoflake -ir --remove-all-unused-imports --remove-unused-variables --ignore-init-module-imports src/ tests/" },
   { cmd = "isort --profile black src/ tests/" },
-  { cmd = "black src/ tests/" }
+  { cmd = "black src/ tests/" },
+  "lint"
 ]
 
 [tool.flake8]

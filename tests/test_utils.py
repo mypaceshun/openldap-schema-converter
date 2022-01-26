@@ -2,13 +2,12 @@ from pathlib import Path
 
 from openldap_schema_converter.utils import (
     load_schema_file,
+    load_schema_file_ldif,
     print_schema_data,
     write_schema_data,
 )
 
-TEST_BASE_DIR = Path(__file__).parent
-TEST_SCHEMA_FILE_LDIF = Path(TEST_BASE_DIR, "schema/ldif/test.ldif")
-TEST_SCHEMA_FILE_SCHEMA = Path(TEST_BASE_DIR, "schema/schema/test.schema")
+from . import TEST_SCHEMA_FILE_LDIF, TEST_SCHEMA_FILE_SCHEMA
 
 
 class TestLoadSchemaFile:
@@ -28,10 +27,28 @@ class TestLoadSchemaFile:
         assert result == []
 
 
+class TestLoadSchemaFileLdif:
+    def test_load_schema_file_ldif_success(self):
+        result = load_schema_file_ldif(TEST_SCHEMA_FILE_LDIF)
+        assert len(result) == 1
+        dn, attrs = result[0]
+        assert dn == "cn=testschema,cn=schema,cn=config"
+        assert attrs["objectClass"] == ["olcSchemaConfig"]
+
+    def test_load_schema_file_no_exists(self):
+        result = load_schema_file_ldif("no_exists_filename")
+        assert result == []
+
+    def test_load_schema_file_not_ldif(self):
+        result = load_schema_file_ldif(TEST_SCHEMA_FILE_SCHEMA)
+        assert result == []
+
 class TestPrintSchemaData:
-    def test_print_schema_data(self):
+    def test_print_schema_data_empty(self, capsys):
         schema_data = [("cn=schema", {"cn": "schema"})]
         print_schema_data(schema_data)
+        captured = capsys.readouterr()
+        assert captured.out == "\n"
 
 
 class TestWriteSchemaData:
