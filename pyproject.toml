@@ -34,7 +34,7 @@ cmd = "pytest --cov=src/ tests/"
 env = { PYTEST_ADDOPTS = "--cov-report=html" }
 
 [tool.poe.tasks.citest]
-ref = "test"
+cmd = "pytest --cov=src/ tests/"
 env = { PYTEST_ADDOPTS = "--cov-report=xml" }
 
 [tool.poe.tasks.lint]
