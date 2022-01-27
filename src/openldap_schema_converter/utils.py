@@ -2,7 +2,7 @@ import re
 import sys
 from pathlib import Path
 from textwrap import wrap
-from typing import Union, List
+from typing import List, Union
 
 from ldif import LDIFParser
 
@@ -81,7 +81,7 @@ def prity_text(value: str) -> str:
 def parse_attribute_types(attribute_types: List[str]) -> List[str]:
     res_text = []
     for attr_type in attribute_types:
-        _attr_type = re.sub(r'\{[0-9]*\}', '', attr_type, 1)
+        _attr_type = re.sub(r"\{[0-9]*\}", "", attr_type, 1)
         pattr_type = prity_text(_attr_type)
         res_text.append(f"attributeType {pattr_type}")
     return res_text
@@ -90,7 +90,7 @@ def parse_attribute_types(attribute_types: List[str]) -> List[str]:
 def parse_objecct_classes(object_classes: List[str]) -> List[str]:
     res_text = []
     for object_cls in object_classes:
-        _object_cls = re.sub(r'\{[0-9]*\}', '', object_cls, 1)
+        _object_cls = re.sub(r"\{[0-9]*\}", "", object_cls, 1)
         pobject_cls = prity_text(_object_cls)
         res_text.append(f"objectClass {pobject_cls}")
     return res_text

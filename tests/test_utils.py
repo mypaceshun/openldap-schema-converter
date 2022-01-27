@@ -43,6 +43,7 @@ class TestLoadSchemaFileLdif:
         result = load_schema_file_ldif(TEST_SCHEMA_FILE_SCHEMA)
         assert result == []
 
+
 class TestPrintSchemaData:
     def test_print_schema_data_empty(self, capsys):
         schema_data = [("cn=schema", {"cn": "schema"})]
