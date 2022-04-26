@@ -26,9 +26,10 @@ pytest-cov = "^3.0.0"
 mypy = "^0.931"
 typed-ast = { version = "^1.5.2", python = "~3.7" }
 black = "^22.3.0"
+types-setuptools = "^57.4.14"
 
 [tool.poetry.scripts]
-schema_converter = "openldap_schema_converter.cli:cli"
+schema-converter = "openldap_schema_converter.cli:cli"
 
 [tool.poe.tasks.test]
 cmd = "pytest --cov=src/ --cov-report=html --cov-report=xml --cov-report=term tests/"
@@ -51,7 +52,6 @@ sequence = [
 [tool.flake8]
 max-line-length = 88
 max-complexity = 10
-ignore = "E203,W503,W504"
 
 [tool.mypy]
 python_version = 3.9

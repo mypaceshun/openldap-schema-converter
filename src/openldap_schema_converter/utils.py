@@ -6,6 +6,22 @@ from typing import List, Union
 
 from ldif import LDIFParser
 
+from openldap_schema_converter.converter import FORMAT
+
+
+def load_file(targetfile: Union[str, Path], format: FORMAT = None) -> List:
+    return load_schema_file(targetfile)
+
+
+def print_data(schema_data: List, format: FORMAT = None) -> None:
+    print_schema_data(schema_data)
+
+
+def write_data(
+    schema_data: List, outfile: Union[str, Path], format: FORMAT = None
+) -> None:
+    write_schema_data(schema_data, outfile)
+
 
 def load_schema_file(targetfile: Union[str, Path]) -> List:
     targetpath: Path = Path(targetfile)
