@@ -8,6 +8,10 @@ packages = [
   { include = 'openldap_schema_converter', from = 'src' }
 ]
 
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+
 [tool.poetry.dependencies]
 python = "^3.8"
 ldif = "^4.1.2"
