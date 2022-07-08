@@ -1,8 +1,10 @@
 import click
 
 from openldap_schema_converter import __name__, __version__
-from openldap_schema_converter.converter import FORMAT
-from openldap_schema_converter.utils import load_file, print_data, write_data
+from openldap_schema_converter.handler import HANDLER_TYPE, output, read, write
+
+# from openldap_schema_converter.converter import FORMAT
+# from openldap_schema_converter.utils import load_file, print_data, write_data
 
 
 @click.command()
@@ -10,18 +12,22 @@ from openldap_schema_converter.utils import load_file, print_data, write_data
 @click.help_option("-h", "--help")
 @click.option("-o", "--outfile", help="output filename")
 @click.option(
-    "--input-type", type=click.Choice(list(FORMAT)), help="Select input file format"
+    "--input-type",
+    type=click.Choice(list(HANDLER_TYPE)),
+    help="Select input file format",
 )
 @click.option(
     "-t",
     "--output-type",
-    type=click.Choice(list(FORMAT)),
+    type=click.Choice(list(HANDLER_TYPE)),
     help="Select output format",
 )
 @click.argument("targetfile", type=click.Path(exists=True), required=True)
 def cli(outfile, input_type, output_type, targetfile):
-    schema_data = load_file(targetfile)
+    schema_data = read(targetfile, handler_type=input_type)
+    if schema_data is None:
+        print("schema data empty!")
     if outfile is None:
-        print_data(schema_data)
+        output(schema_data, handler_type=output_type)
     else:
-        write_data(schema_data, outfile)
+        write(schema_data, outfile, handler_type=output_type)

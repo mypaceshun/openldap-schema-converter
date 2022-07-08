@@ -8,10 +8,6 @@ packages = [
   { include = 'openldap_schema_converter', from = 'src' }
 ]
 
-include = [
-  "src/openldap_schema_converter/py.typed"
-]
-
 [tool.poetry.dependencies]
 python = "^3.8"
 ldif = "^4.1.2"

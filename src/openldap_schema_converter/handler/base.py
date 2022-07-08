@@ -1,7 +1,7 @@
 import sys
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import TextIO, Union
+from typing import List, TextIO, Union
 
 from openldap_schema_parser.schema import Schema
 
@@ -12,13 +12,18 @@ class BaseHandler(ABC):
         pass
 
     @abstractmethod
-    def write_fd(self, schema_data: Schema, fd: TextIO) -> None:
+    def get_prity_lines(self, schema_data: Schema) -> List[str]:
         pass
+
+    def _write_fd(self, schema_data: Schema, fd: TextIO) -> None:
+        lines = self.get_prity_lines(schema_data)
+        for line in lines:
+            fd.write(f"{line}\n")
 
     def write(self, schema_data: Schema, filepath: Union[str, Path]) -> None:
         p = Path(filepath)
-        with p.open() as fd:
-            self.write_fd(schema_data, fd)
+        with p.open("w") as fd:
+            self._write_fd(schema_data, fd)
 
-    def print(self, schema_data: Schema) -> None:
-        self.write_fd(schema_data, sys.stdout)
+    def output(self, schema_data: Schema) -> None:
+        self._write_fd(schema_data, sys.stdout)
