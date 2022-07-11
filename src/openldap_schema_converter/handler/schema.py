@@ -2,8 +2,8 @@ from pathlib import Path
 from textwrap import TextWrapper
 from typing import List, Optional, Union
 
-from openldap_schema_parser.attribute import ATTRIBUTE_USAGE
-from openldap_schema_parser.objectclass import STRUCTURAL_TYPE
+from openldap_schema_parser.attribute import ATTRIBUTE_USAGE, Attribute
+from openldap_schema_parser.objectclass import STRUCTURAL_TYPE, ObjectClass
 from openldap_schema_parser.parser import parse
 from openldap_schema_parser.schema import Schema
 
@@ -12,6 +12,7 @@ from openldap_schema_converter.handler.base import BaseHandler
 
 class SchemaHandler(BaseHandler):
     def __init__(self):
+        self.wrap = True
         self.max_width = 80
         self.whsp = " "
         self.indent = self.whsp * 4
@@ -58,37 +59,42 @@ class SchemaHandler(BaseHandler):
     ) -> List[str]:
         lines: List[str] = []
         for attributetype in schema_data.attribute_list:
-            id = "attributeType"
-            lines.append(f"{id}{self.whsp}{self.left}{self.whsp}{attributetype.oid}")
-            self._line_add_name(
-                lines,
-                attributetype.name,
-                attributetype.alias,
-            )
-            if isinstance(attributetype.description, str):
-                value = self.quote + attributetype.description + self.quote
-                lines.append(self._get_line_key_value("DESC", value))
-            self._line_add_key_flag(lines, "OBSOLETE", attributetype.obsolete)
-            self._line_add_key_value(lines, "SUP", attributetype.sup)
-            self._line_add_key_value(lines, "EQUALITY", attributetype.equality)
-            self._line_add_key_value(lines, "ORDERING", attributetype.ordering)
-            self._line_add_key_value(lines, "SUBSTR", attributetype.substr)
-            self._line_add_key_value(lines, "SYNTAX", attributetype.syntax)
-            self._line_add_key_flag(
-                lines,
-                "SINGLE-VALUE",
-                attributetype.single_value,
-            )
-            self._line_add_key_flag(lines, "COLLECTIVE", attributetype.collective)
-            self._line_add_key_flag(
-                lines,
-                "NO-USER-MODIFICATION",
-                attributetype.no_user_modification,
-            )
-            if isinstance(attributetype.usage, ATTRIBUTE_USAGE):
-                self._line_add_key_value(lines, "USAGE", attributetype.usage.value)
-            lines[-1] = f"{lines[-1]}{self.whsp}{self.right}"
-            lines.append("")
+            lines += self.get_prity_lines_attributetype_one(attributetype)
+        return lines
+
+    def get_prity_lines_attributetype_one(self, attributetype: Attribute):
+        lines: List[str] = []
+        id = "attributeType"
+        lines.append(f"{id}{self.whsp}{self.left}{self.whsp}{attributetype.oid}")
+        self._line_add_name(
+            lines,
+            attributetype.name,
+            attributetype.alias,
+        )
+        if isinstance(attributetype.description, str):
+            value = self.quote + attributetype.description + self.quote
+            lines.append(self._get_line_key_value("DESC", value))
+        self._line_add_key_flag(lines, "OBSOLETE", attributetype.obsolete)
+        self._line_add_key_value(lines, "SUP", attributetype.sup)
+        self._line_add_key_value(lines, "EQUALITY", attributetype.equality)
+        self._line_add_key_value(lines, "ORDERING", attributetype.ordering)
+        self._line_add_key_value(lines, "SUBSTR", attributetype.substr)
+        self._line_add_key_value(lines, "SYNTAX", attributetype.syntax)
+        self._line_add_key_flag(
+            lines,
+            "SINGLE-VALUE",
+            attributetype.single_value,
+        )
+        self._line_add_key_flag(lines, "COLLECTIVE", attributetype.collective)
+        self._line_add_key_flag(
+            lines,
+            "NO-USER-MODIFICATION",
+            attributetype.no_user_modification,
+        )
+        if isinstance(attributetype.usage, ATTRIBUTE_USAGE):
+            self._line_add_key_value(lines, "USAGE", attributetype.usage.value)
+        lines[-1] = f"{lines[-1]}{self.whsp}{self.right}"
+        lines.append("")
 
         return lines
 
@@ -98,18 +104,23 @@ class SchemaHandler(BaseHandler):
     ) -> List[str]:
         lines: List[str] = []
         for objectclass in schema_data.objectclass_list:
-            id = "objectClass"
-            lines.append(f"{id}{self.whsp}{self.left}{self.whsp}{objectclass.oid}")
-            self._line_add_name(lines, objectclass.name, objectclass.alias)
-            self._line_add_description(lines, objectclass.description)
-            self._line_add_key_flag(lines, "OBSOLETE", objectclass.obsolete)
-            self._line_add_key_value(lines, "SUP", objectclass.sup)
-            if isinstance(objectclass.structural_type, STRUCTURAL_TYPE):
-                self._line_add_key_flag(lines, objectclass.structural_type.value)
-            self._line_add_may(lines, objectclass.may)
-            self._line_add_must(lines, objectclass.must)
-            lines[-1] = f"{lines[-1]}{self.whsp}{self.right}"
-            lines.append("")
+            lines += self.get_prity_lines_objectclass_one(objectclass)
+        return lines
+
+    def get_prity_lines_objectclass_one(self, objectclass: ObjectClass) -> List[str]:
+        lines: List[str] = []
+        id = "objectClass"
+        lines.append(f"{id}{self.whsp}{self.left}{self.whsp}{objectclass.oid}")
+        self._line_add_name(lines, objectclass.name, objectclass.alias)
+        self._line_add_description(lines, objectclass.description)
+        self._line_add_key_flag(lines, "OBSOLETE", objectclass.obsolete)
+        self._line_add_key_value(lines, "SUP", objectclass.sup)
+        if isinstance(objectclass.structural_type, STRUCTURAL_TYPE):
+            self._line_add_key_flag(lines, objectclass.structural_type.value)
+        self._line_add_may(lines, objectclass.may)
+        self._line_add_must(lines, objectclass.must)
+        lines[-1] = f"{lines[-1]}{self.whsp}{self.right}"
+        lines.append("")
         return lines
 
     def _line_add_name(
@@ -192,5 +203,10 @@ class SchemaHandler(BaseHandler):
 
     def _get_line_key_value(self, key: str, value: str = None) -> str:
         if value is None:
-            return self.wrapper.fill(key)
-        return self.wrapper.fill(f"{key}{self.whsp}{value}")
+            if self.wrap:
+                return self.wrapper.fill(key)
+            return key
+        text = f"{key}{self.whsp}{value}"
+        if self.wrap:
+            return self.wrapper.fill(text)
+        return text
