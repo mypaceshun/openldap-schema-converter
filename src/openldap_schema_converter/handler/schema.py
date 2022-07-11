@@ -25,11 +25,9 @@ class SchemaHandler(BaseHandler):
         )
 
     def read(self, readfile: Union[Path, str]) -> Schema:
-        print("SchemaHandler read")
         return parse(str(readfile))
 
     def get_prity_lines(self, schema_data: Schema) -> List[str]:
-        print("SchemaHandler write")
         lines: List[str] = []
 
         lines += self.get_prity_lines_objectidentifier(schema_data)
@@ -88,7 +86,7 @@ class SchemaHandler(BaseHandler):
                 attributetype.no_user_modification,
             )
             if isinstance(attributetype.usage, ATTRIBUTE_USAGE):
-                self._line_add_key_value(lines, "USAGE", str(attributetype.usage))
+                self._line_add_key_value(lines, "USAGE", attributetype.usage.value)
             lines[-1] = f"{lines[-1]}{self.whsp}{self.right}"
             lines.append("")
 
@@ -107,9 +105,10 @@ class SchemaHandler(BaseHandler):
             self._line_add_key_flag(lines, "OBSOLETE", objectclass.obsolete)
             self._line_add_key_value(lines, "SUP", objectclass.sup)
             if isinstance(objectclass.structural_type, STRUCTURAL_TYPE):
-                self._line_add_key_flag(lines, str(objectclass.structural_type))
+                self._line_add_key_flag(lines, objectclass.structural_type.value)
             self._line_add_may(lines, objectclass.may)
             self._line_add_must(lines, objectclass.must)
+            lines[-1] = f"{lines[-1]}{self.whsp}{self.right}"
             lines.append("")
         return lines
 
@@ -143,24 +142,30 @@ class SchemaHandler(BaseHandler):
         value = self.quote + description + self.quote
         return self._line_add_key_value(lines, "DESC", value)
 
-    def _line_add_may(self, lines: List[str], may: List[str]) -> List[str]:
+    def _line_add_may(self, lines: List[str], may: Union[List[str], str]) -> List[str]:
+        if isinstance(may, str):
+            return self._line_add_key_value(lines, "MAY", may)
         if len(may) == 0:
             return lines
         if len(may) == 1:
             return self._line_add_key_value(lines, "MAY", may[0])
-        attrs = f"$${self.whsp}".join(may)
+        attrs = f"$${self.whsp}".join(sorted(may))
         value = self.whsp.join([self.left, attrs, self.right])
         line = self._get_line_key_value("MAY", value)
         line = line.replace("$$", f"{self.whsp}$")
         lines.append(line)
         return lines
 
-    def _line_add_must(self, lines: List[str], must: List[str]) -> List[str]:
+    def _line_add_must(
+        self, lines: List[str], must: Union[List[str], str]
+    ) -> List[str]:
+        if isinstance(must, str):
+            return self._line_add_key_value(lines, "MUST", must)
         if len(must) == 0:
             return lines
         if len(must) == 1:
             return self._line_add_key_value(lines, "MUST", must[0])
-        attrs = f"$${self.whsp}".join(must)
+        attrs = f"$${self.whsp}".join(sorted(must))
         value = self.whsp.join([self.left, attrs, self.right])
         line = self._get_line_key_value("MUST", value)
         line = line.replace("$$", f"{self.whsp}$")

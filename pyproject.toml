@@ -15,7 +15,7 @@ vcs = "git"
 [tool.poetry.dependencies]
 python = "^3.8"
 ldif = "^4.1.2"
-openldap-schema-parser = "^1.1.1"
+openldap-schema-parser = "^1.1.2"
 click = "^8.1.2"
 
 [tool.poetry.dev-dependencies]
@@ -47,7 +47,7 @@ ignore_fail = "return_non_zero"
 
 [tool.poe.tasks.format]
 sequence = [
-  { cmd = "autoflake -ir --remove-all-unused-imports --remove-unused-variables --ignore-init-module-imports src/ tests/" },
+  { cmd = "autoflake -ir --remove-all-unused-imports --ignore-init-module-imports src/ tests/" },
   { cmd = "isort --profile black src/ tests/" },
   { cmd = "black src/ tests/" },
   "lint"

@@ -20,7 +20,6 @@ repos:
     args:
       - "-i"
       - "--remove-all-unused-imports"
-      - "--remove-unused-variables"
       - "--ignore-init-module-imports"
 
 - repo: https://gitlab.com/pycqa/flake8
