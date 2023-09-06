@@ -13,9 +13,9 @@ attributeType ( 1.1.1.1.1.1.1.1.1.1.3
 objectClass ( 1.1.1.1.1.1.1.1.1.2
     NAME 'testClass'
     AUXILIARY
-    MAY ( testAttribute ))
+    MAY testAttribute )
 
 objectClass ( 1.1.1.1.1.1.1.1.1.4
     NAME 'testClass'
     AUXILIARY
-    MAY ( testAttribute ))
+    MAY testAttribute )

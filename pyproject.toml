@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "openldap-schema-converter"
-version = "0.9.0"
+version = "0.9.1.post2.dev0+f4e78e9"
 description = "OpenLDAP Schema file converter LDIF or schema"
 authors = ["KAWAI Shun <shun@osstech.co.jp>"]
 license = "MIT"
@@ -9,7 +9,7 @@ packages = [
 ]
 
 [tool.poetry-dynamic-versioning]
-enable = true
+enable = false
 vcs = "git"
 
 [tool.poetry.dependencies]
@@ -19,7 +19,6 @@ openldap-schema-parser = "^1.1.2"
 click = "^8.1.2"
 
 [tool.poetry.dev-dependencies]
-poethepoet = "^0.12.0"
 pre-commit = "^2.16.0"
 flake8 = "^4.0.1"
 autoflake = "^1.4"

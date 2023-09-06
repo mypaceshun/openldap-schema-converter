@@ -29,7 +29,6 @@ class LdifHandler(BaseHandler):
             parser = LDIFParser(fd)
             for dn, attrs in parser.parse():
                 ldifdata.append((dn, attrs))
-
         # あまりないが、1つのLDIFに複数のエントリが定義されていた場合、
         # 1つめのエントリしか認識できない。
         return self.ldif2schema(*ldifdata[0])
